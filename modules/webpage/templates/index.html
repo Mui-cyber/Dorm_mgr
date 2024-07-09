@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./static/css/bootstrap.min.css">
+    <script src="./static/js/bootstrap.bundle.min.js"></script>
+    <script src="./static/js/jquery-3.7.1.min.js"></script>
+    <script src="./static/js/time.js"></script>
+    <script src="./static/js/weather.js"></script>
+    <script src="./static/js/school_week.js"></script>
+    <script src="./static/js/network.js"></script>
+    <script src="./static/js/toast.js"></script>
+    <script src="./static/js/clipboard.js"></script>
+    <title>宿舍管理平台</title>
+    <style>
+        body {
+            background: url(/static/img/bg.jpg) no-repeat;
+            background-size: 100% 100%; /* 拉伸图片以充满容器 */
+            background-repeat: no-repeat; /* 禁止重复 */
+        }
+        .blur-background {
+            background-color: rgba(255, 255, 255, 0.75); /* 背景颜色设置为透明，可根据需要调整透明度 */
+        }
+    </style>
+</head>
+<body>
+    <div class="container my-3">
+        <!--第一行-->
+        <div class="row">
+            <!--左上角-->
+            <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <div class="border-2 rounded p-1 bg-secondary">
+                    <div class="row w-100 p-2">
+                        <div class="float-start text-light">基本信息</div>
+                    </div>
+                    <div class="w-100">
+                        <div class="ps-2 blur-background bg-light fs-5 pb-2 py-2">
+                            <div>今日日期：<button class="btn btn-sm btn-success text-light text-primary"><span id="current_date"></span></button></div>
+                            <div>当前时间：<button class="btn btn-sm btn-success text-light text-primary"><span id="current_time"></span></button></div>
+                            <div>当前周数：<button class="btn btn-sm btn-success text-light text-primary"><span id="current_week"></span></button></div>
+                        </div>
+                    </div>
+                    <!-- <div class="row w-100 p-2">
+                        <div class="float-start text-light">天气情况</div>
+                    </div>
+                    <div class="w-100">
+                        <div class="blur-background bg-light fs-6 pb-2 py-2">
+                            <table class="table table-striped">
+                                <tr>
+                                    <td>天气预报：<span id="weather_forecast"></span></td>
+                                    <td>空气质量：<span id="current_air_quality"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>当前温度：<span id="current_temperature"></span></td>
+                                    <td>当前湿度：<span id="current_humidity"></span></td>
+                                </tr>
+                                <tr>
+                                    <td>天气建议：<span id="weather_suggestion"></span></td>
+                                    <td>空气质量评价：<span id="current_air_suggestion"></span></td>
+                                </tr>
+                            </table>
+                            <div id="hidden_weather_data" class="collapse">
+                                <table class="table table-striped">
+                                    <tr>
+                                        <td>最高温：<span id="max_temperature"></span></td>
+                                        <td>最低温：<span id="min_temperature"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>日出时间：<span id="sunrise_time"></span></td>
+                                        <td>日落时间：<span id="sunset_time"></span></td>
+                                    </tr>
+
+                                    <tr>
+                                        <td>风向：<span id="wind_direction"></span></td>
+                                        <td>风力：<span id="wind_speed"></span></td>
+                                    </tr>
+                                    <tr>
+                                        <td>PM2.5：<span id="current_pm25"></span></td>
+                                        <td>PM10：<span id="current_pm10"></span></td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <button id="weather_btn" class="btn btn-md bg-secondary text-light text-center" data-bs-toggle="collapse" data-bs-target="#hidden_weather_data" aria-expanded="false" aria-controls="hidden_weather_data">显示/隐藏更多信息</button>
+                        </div>
+                    </div> -->
+                </div>
+            </div>
+            <!--右上角-->
+            <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <div class="border-2 rounded p-1 bg-success">
+                    <div class="row w-100 p-2">
+                        <div class="float-start text-light">网络状况</div>
+                    </div>
+                    <div class="w-100">
+                        <div class="ps-2 blur-background bg-light fs-5 pb-2 py-2">
+                            <div>路由器(学校内部)IP为：<button onclick="write_to_clipboard(this)" id="router-ip" class="btn btn-sm bg-success text-light text-center"></button></div>
+                            <div>您的IP：<button onclick="write_to_clipboard(this)" id="user-ip" class="btn btn-sm bg-success text-light text-center">
+                            </button></div>
+                        </div>
+                    </div>
+                    <div class="row w-100 p-2">
+                        <div class="float-start text-light">切换网络</div>
+                    </div>
+                    <div class="w-100">
+                        <div class="blur-background bg-light fs-5 pb-2 py-2">
+                            <div class="ps-2">当前网络：<button class="btn btn-sm bg-success text-light text-center"><span id="isp"></span></button></div>
+                            <div class="text-center py-2 pb-1"><button class="btn btn-md bg-danger text-light">请确保在切换网络的时候问过别人有没有在用网络!</button></div>
+                            <div class="text-center my-5">
+                                <button onclick="change_to_isp_network()" class="btn btn-lg bg-success text-light text-center mb-3">切换至绑定的运营商</button>
+                                <button onclick="change_to_campus_network()" class="btn btn-lg bg-danger text-light text-center mb-3">切换至校园网</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-12 col-md-4 col-lg-4 mb-3">
+                <div class="border-2 rounded p-1 bg-primary">
+                    <!-- <div class="row w-100 p-2">
+                        <div class="float-start text-light">常用链接(宿舍)</div>
+                    </div>
+                    <div class="w-100">
+                        <div class="my-1 blur-background bg-light fs-5 pb-2 py-2 text-center">
+
+                        </div>
+                    </div> -->
+                    <div class="row w-100 p-2">
+                        <div class="float-start text-light">常用链接(学校)</div>
+                    </div>
+                    <div class="w-100">
+                        <div class="blur-background bg-light fs-5 pb-2 py-2 text-center">
+                            <a href="http://www.xujc.com/"><button class="my-1 btn btn-md bg-info text-light text-center">学校官网</button></a>
+                            <a href="http://jw.xujc.com/"><button class="my-1 btn btn-md bg-info text-light text-center">学校教务系统</button></a>
+                            <a href="http://teach.xujc.com/"><button class="my-1 btn btn-md bg-info text-light text-center">学校教学文件系统</button></a>
+                            <a href="http://mail.xujc.com/"><button class="my-1 btn btn-md bg-info text-light text-center">学校邮箱</button></a>
+                            <a href="http://tyxt.xujc.com:8585/EPLATE/loginAction!initLogin.action"><button class="my-1 btn btn-md bg-info text-light text-center">体育课考勤(校园网)</button></a>
+                            <a href="http://speed.xujc.com/"><button class="my-1 btn btn-md bg-info text-light text-center">测速平台</button></a>
+                            <a href="http://ijg.xujc.com/"><button class="my-1 btn btn-md bg-info text-light text-center">学校学工平台(打卡)</button></a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row my-3 m-1">
+            <div class="border-2 rounded p-1 bg-info">
+                <div class="row w-100 p-2">
+                    <div class="float-start text-light">电费情况</div>
+                </div>
+                <div class="w-100">
+                    <iframe src="/static/elec_chart.html" height="500px" width="100%"></iframe>
+                </div>
+            </div>
+        </div>
+        <div class="toast-container position-fixed bottom-0 end-0 p-3">
+            <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+              <div id="toast-main" class="toast-header text-light">
+                <strong id="toast-head-msg" class="me-auto"></strong>
+                <small>现在</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+              </div>
+              <div id="toast-body-msg" class="toast-body"></div>
+            </div>
+          </div>
+    </div>
+    <script>
+        let currentDomain = window.location.hostname;
+        time();
+        update_network_module();
+        setInterval("time()",500);
+        setInterval("update_network_module()",5000);
+        get_school_week();
+        get_weather();
+    </script>
+</body>
+</html>
+

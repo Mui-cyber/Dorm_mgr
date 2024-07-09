@@ -1,0 +1,6 @@
+flask
+request
+bs4
+plotly
+schedule
+urllib
